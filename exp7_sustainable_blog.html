@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenSteps - Sustainable Living Blog</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <style>
+        body { font-family: Georgia, "Times New Roman", serif; margin: 0; background-color: #f1f7ee; color: #2c3a2c; }
+        body.dark { background-color: #1b2a1e; color: #dfeedd; }
+
+        header { background-color: #2e6b3a; color: white; text-align: center; padding: 28px 15px; }
+        header h1 { margin: 5px; font-size: 34px; }
+        header p { margin: 4px; font-style: italic; }
+
+        nav { background-color: #245530; text-align: center; padding: 8px; position: sticky; top: 0; z-index: 5; }
+        nav a { color: #d7f0cf; text-decoration: none; margin: 0 14px; font-family: Arial, sans-serif; font-size: 14px; }
+        nav a:hover { color: white; text-decoration: underline; }
+
+        .page { width: 80%; max-width: 950px; margin: 25px auto; }
+
+        .card {
+            background-color: white; padding: 22px 25px; border-radius: 10px;
+            box-shadow: 0 0 8px #9bb59b; margin-bottom: 25px;
+        }
+        body.dark .card { background-color: #25382a; box-shadow: 0 0 8px #0d1710; }
+
+        h2 { color: #2e6b3a; margin-top: 0; }
+        body.dark h2 { color: #8fd49a; }
+        h3 { margin-bottom: 6px; }
+
+        button {
+            font-family: Arial, sans-serif; background-color: #2e6b3a; color: white; border: none;
+            padding: 9px 14px; margin: 4px; border-radius: 5px; cursor: pointer;
+        }
+        button:hover { background-color: #4a9457; }
+
+        input[type="number"] { padding: 8px; border: 1px solid #8aa88a; border-radius: 4px; }
+
+        /* ---------- Blog posts ---------- */
+        .post { border-left: 5px solid #6bb87a; padding-left: 15px; margin-bottom: 20px; }
+        .post .meta { font-family: Arial, sans-serif; font-size: 12px; color: #6a806a; }
+        body.dark .post .meta { color: #a5c3a5; }
+        .more { display: none; }
+        .tag { display: inline-block; background-color: #dff1d8; color: #245530; font-family: Arial, sans-serif; font-size: 12px; padding: 2px 8px; border-radius: 10px; }
+        .likeBtn { background-color: #d6573d; }
+        .likeBtn:hover { background-color: #e5775f; }
+
+        .filters { margin-bottom: 15px; }
+        .filters button.active { background-color: #1b4526; outline: 2px solid #6bb87a; }
+
+        #tipBox { background-color: #e6f4de; border-radius: 8px; padding: 15px; font-style: italic; }
+        body.dark #tipBox { background-color: #2f4934; }
+
+        /* ---------- Impact animation ---------- */
+        #growArea { height: 110px; background-color: #e3efe0; position: relative; overflow: hidden; border-radius: 8px; margin: 12px 0; }
+        body.dark #growArea { background-color: #2f4934; }
+        #leafBox {
+            position: absolute; left: 0; top: 25px; width: 110px; height: 60px; background-color: #4a9457;
+            color: white; text-align: center; line-height: 60px; border-radius: 30px; font-family: Arial, sans-serif;
+        }
+
+        /* ---------- Eco Budget ---------- */
+        .percent-row { margin: 15px 0; font-family: Arial, sans-serif; }
+        .percent-row label { margin: 0 6px; font-weight: bold; }
+        .percent-row input { width: 60px; }
+        #budgetResult { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 18px; font-family: Arial, sans-serif; }
+        .budget-box { width: 130px; padding: 15px 5px; color: white; font-size: 14px; border-radius: 6px; text-align: center; }
+        #solarBox { background-color: #e0a100; }
+        #foodBox  { background-color: #2e8b3d; }
+        #wasteBox { background-color: #1f7a8c; }
+        #treeBox  { background-color: #7a4e2d; }
+
+        /* ---------- Eco Store ---------- */
+        .shop-title { background-color: #2e6b3a; color: white; padding: 10px; border-radius: 6px; text-align: center; }
+        .product-grid { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 15px; justify-content: space-around; font-family: Arial, sans-serif; }
+        .product { width: 150px; font-size: 13px; text-align: center; }
+        .product-pic { height: 90px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 45px; margin-bottom: 6px; }
+        .order-form { max-width: 500px; font-family: Arial, sans-serif; }
+        .order-form label { display: block; font-weight: bold; color: #2e6b3a; font-size: 13px; margin-top: 8px; }
+        body.dark .order-form label { color: #8fd49a; }
+        .order-form input { width: 100%; box-sizing: border-box; }
+        #placeOrder { width: 100%; margin: 12px 0; background-color: #1f7a8c; }
+        .bill { border-top: 2px solid #6bb87a; margin-top: 15px; padding-top: 10px; max-width: 500px; font-family: Arial, sans-serif; }
+        .bill h3 { color: #2e8b3d; margin-top: 0; }
+        .total-row { display: inline-flex; font-size: 18px; font-weight: bold; }
+        .total-label { background-color: #2e8b3d; color: white; padding: 4px 40px; }
+        #totalPrice { color: #d62839; padding: 4px 15px; }
+
+        /* ---------- Eco Car Workshop ---------- */
+        #carArea { height: 190px; position: relative; width: 300px; margin: 10px auto; background-color: #e3efe0; border-radius: 8px; }
+        body.dark #carArea { background-color: #2f4934; }
+        #glass {
+            position: absolute; left: 80px; top: 20px; width: 0; height: 0;
+            border-left: 25px solid transparent; border-right: 25px solid transparent;
+            border-bottom: 40px solid #3cb054;
+        }
+        #carBody { position: absolute; left: 40px; top: 60px; width: 220px; height: 45px; background-color: #7fe02a; }
+        .tyre { position: absolute; background-color: #121a4a; border-radius: 50%; }
+        #tyre1 { left: 70px; }
+        #tyre2 { left: 190px; }
+        .center { text-align: center; }
+
+        footer { background-color: #245530; color: white; text-align: center; padding: 15px; font-family: Arial, sans-serif; }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>🌱 GreenSteps</h1>
+    <p>A blog about living lightly on the planet</p>
+    <button id="darkBtn">Toggle Dark Mode</button>
+</header>
+
+<nav>
+    <a href="#blog">Blog</a>
+    <a href="#tip">Daily Tip</a>
+    <a href="#impact">Impact</a>
+    <a href="#budget">Eco Budget</a>
+    <a href="#store">Eco Store</a>
+    <a href="#car">Eco Car</a>
+</nav>
+
+
+<div class="page">
+
+    <!-- ================= BLOG POSTS ================= -->
+    <div class="card" id="blog">
+        <h2>Latest Posts</h2>
+
+        <div class="filters">
+            <button class="filterBtn active" data-cat="all">All</button>
+            <button class="filterBtn" data-cat="energy">Energy</button>
+            <button class="filterBtn" data-cat="waste">Waste</button>
+            <button class="filterBtn" data-cat="food">Food</button>
+        </div>
+
+        <div class="post" data-cat="energy">
+            <h3>10 Ways to Cut Your Electricity Bill</h3>
+            <div class="meta"><span class="tag">Energy</span> by Jerone L</div>
+            <p>Switching to LED bulbs and unplugging idle chargers is the easiest place to begin.</p>
+            <p class="more">Next, use natural light during the day, set your AC to 25°C or above, and
+               consider a rooftop solar panel. Small changes add up to a noticeably lower bill and a
+               smaller carbon footprint.</p>
+            <button class="readBtn">Read More</button>
+            <button class="likeBtn">❤ Like (<span class="count">0</span>)</button>
+        </div>
+
+        <div class="post" data-cat="waste">
+            <h3>Zero-Waste Kitchen for Beginners</h3>
+            <div class="meta"><span class="tag">Waste</span> by Jerone L</div>
+            <p>Start by replacing single-use plastic with steel containers and cloth bags.</p>
+            <p class="more">Compost vegetable peels in a small bin, buy loose grains instead of packets,
+               and carry your own bottle. Within a month your dustbin will fill up much more slowly.</p>
+            <button class="readBtn">Read More</button>
+            <button class="likeBtn">❤ Like (<span class="count">0</span>)</button>
+        </div>
+
+        <div class="post" data-cat="food">
+            <h3>Eating Local, Eating Seasonal</h3>
+            <div class="meta"><span class="tag">Food</span> by Jerone L</div>
+            <p>Food that travels fewer kilometres leaves behind far fewer emissions.</p>
+            <p class="more">Visit your nearby farmers' market, choose seasonal vegetables and millets,
+               and try a meat-free day each week. It is good for your health, your wallet and the planet.</p>
+            <button class="readBtn">Read More</button>
+            <button class="likeBtn">❤ Like (<span class="count">0</span>)</button>
+        </div>
+    </div>
+
+
+    <!-- ================= DAILY TIP ================= -->
+    <div class="card" id="tip">
+        <h2>Eco Tip of the Day</h2>
+        <div id="tipBox">Click the button to get a green tip!</div>
+        <button id="tipBtn">New Tip</button>
+    </div>
+
+
+    <!-- ================= IMPACT ANIMATION ================= -->
+    <div class="card" id="impact">
+        <h2>Our Green Impact</h2>
+        <div id="growArea"><div id="leafBox">🍃 Impact</div></div>
+        <button id="startAnim">Start Animation</button>
+        <button id="stopAnim">Stop Animation</button>
+        <button id="fadeBtn">Hide Pledge</button>
+        <button id="fadeInBtn">Show Pledge</button>
+        <p id="pledge"><b>Our Pledge:</b> Plant one tree for every 100 readers who adopt a sustainable habit.</p>
+    </div>
+
+
+    <!-- ================= 1. ECO BUDGET (jQuery Task 1) ================= -->
+    <div class="card" id="budget">
+        <h2>Eco Budget Planner</h2>
+        <p>Decide how to divide your monthly green budget.</p>
+
+        <label><b>Amount to Manage (Rs.):</b></label>
+        <input type="number" id="amount" value="15000">
+
+        <div class="percent-row">
+            <label>Solar/Energy(%):</label><input type="number" id="solar" value="40">
+            <label>Organic Food(%):</label><input type="number" id="food" value="30">
+            <label>Recycling(%):</label><input type="number" id="waste" value="20">
+            <label>Tree Planting(%):</label><input type="number" id="tree" value="10">
+        </div>
+
+        <button id="evaluate">Evaluate My Money</button>
+
+        <div id="budgetResult">
+            <div class="budget-box" id="solarBox"></div>
+            <div class="budget-box" id="foodBox"></div>
+            <div class="budget-box" id="wasteBox"></div>
+            <div class="budget-box" id="treeBox"></div>
+        </div>
+    </div>
+
+
+    <!-- ================= 2. ECO STORE (jQuery Task 2) ================= -->
+    <div class="card" id="store">
+        <h2 class="shop-title">ECO STORE</h2>
+
+        <div class="product-grid">
+            <div class="product"><div class="product-pic" style="background:#d6ecff;">🍶</div>Steel Bottle - Rs. 300</div>
+            <div class="product"><div class="product-pic" style="background:#f4e6c8;">👜</div>Cloth Bag - Rs. 150</div>
+            <div class="product"><div class="product-pic" style="background:#d9c7b0;">♻️</div>Compost Bin - Rs. 450</div>
+            <div class="product"><div class="product-pic" style="background:#fff3b0;">💡</div>Solar Lamp - Rs. 350</div>
+        </div>
+
+        <h2 style="text-align:center;">Order Products</h2>
+
+        <div class="order-form">
+            <label>Steel Bottle(Quantity)</label>
+            <input type="number" id="bottle" min="0" value="0">
+
+            <label>Cloth Bag(Quantity)</label>
+            <input type="number" id="bag" min="0" value="0">
+
+            <label>Compost Bin(Quantity)</label>
+            <input type="number" id="bin" min="0" value="0">
+
+            <label>Solar Lamp(Quantity)</label>
+            <input type="number" id="lamp" min="0" value="0">
+
+            <button id="placeOrder">Place Order</button>
+        </div>
+
+        <div class="bill">
+            <h3>Purchase Order Bill!!</h3>
+            <div class="total-row">
+                <span class="total-label">Total Price</span>
+                <span id="totalPrice">Rs.0</span>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= 3. ECO CAR WORKSHOP (jQuery Task 3) ================= -->
+    <div class="card" id="car">
+        <h2>Electric Car Workshop</h2>
+        <p>Customise a zero-emission car: colour, glass tint and tyre size.</p>
+
+        <div id="carArea">
+            <div id="glass"></div>
+            <div id="carBody"></div>
+            <div class="tyre" id="tyre1"></div>
+            <div class="tyre" id="tyre2"></div>
+        </div>
+
+        <div class="center">
+            <button id="glassBtn">Change Glass Color</button>
+            <button id="bodyBtn">Change Body Color</button>
+            <button id="tyreInc">Tyre Size Increase</button>
+            <button id="tyreDec">Tyre Size Decrease</button>
+            <button id="resetBtn">Reset</button>
+        </div>
+    </div>
+
+</div>
+
+
+<footer>
+    <p>© 2026 GreenSteps | Written by Mathanathithya NS | URK24CS1095</p>
+</footer>
+
+
+<script>
+$(document).ready(function () {
+
+    /* ================= DARK MODE ================= */
+    $("#darkBtn").click(function () { $("body").toggleClass("dark"); });
+
+
+    /* ================= BLOG: READ MORE / LIKE / FILTER ================= */
+    $(".readBtn").click(function () {
+        var more = $(this).siblings(".more");
+        more.slideToggle(300);
+        $(this).text($(this).text() === "Read More" ? "Show Less" : "Read More");
+    });
+
+    $(".likeBtn").click(function () {
+        var c = $(this).find(".count");
+        c.text(parseInt(c.text()) + 1);
+    });
+
+    $(".filterBtn").click(function () {
+        var cat = $(this).data("cat");
+        $(".filterBtn").removeClass("active");
+        $(this).addClass("active");
+
+        if (cat === "all") {
+            $(".post").fadeIn(300);
+        } else {
+            $(".post").hide();
+            $(".post[data-cat='" + cat + "']").fadeIn(300);
+        }
+    });
+
+
+    /* ================= DAILY TIP ================= */
+    var tips = [
+        "Carry a reusable bottle and skip single-use plastic.",
+        "Turn off lights and fans when you leave a room.",
+        "Walk, cycle or take public transport for short trips.",
+        "Plant a sapling on your birthday every year.",
+        "Wash clothes in cold water and air-dry them.",
+        "Buy only what you need and repair before replacing."
+    ];
+
+    $("#tipBtn").click(function () {
+        var tip = tips[Math.floor(Math.random() * tips.length)];
+        $("#tipBox").fadeOut(200, function () {
+            $(this).text("🌿 " + tip).fadeIn(300);
+        });
+    });
+
+
+    /* ================= IMPACT ANIMATION ================= */
+    function moveRight() {
+        var limit = $("#growArea").width() - $("#leafBox").outerWidth();
+        $("#leafBox").animate({ left: limit + "px" }, 2000, moveLeft);
+    }
+    function moveLeft() {
+        $("#leafBox").animate({ left: "0px" }, 2000, moveRight);
+    }
+
+    $("#startAnim").click(function () { $("#leafBox").stop(true); moveRight(); });
+    $("#stopAnim").click(function ()  { $("#leafBox").stop(true).css("left", "0px"); });
+
+    $("#fadeBtn").click(function ()   { $("#pledge").fadeOut(800); });
+    $("#fadeInBtn").click(function () { $("#pledge").fadeIn(800); });
+
+
+    /* ================= 1. ECO BUDGET PLANNER ================= */
+    $("#budgetResult").hide();
+
+    $("#evaluate").click(function () {
+
+        var amount = parseFloat($("#amount").val());
+        var solar  = parseFloat($("#solar").val());
+        var food   = parseFloat($("#food").val());
+        var waste  = parseFloat($("#waste").val());
+        var tree   = parseFloat($("#tree").val());
+
+        if (isNaN(amount) || isNaN(solar) || isNaN(food) || isNaN(waste) || isNaN(tree)) {
+            alert("Please fill in the amount and all the percentage values.");
+            return;
+        }
+
+        // Amount can be divided only if the percentages add up to 100
+        if (solar + food + waste + tree !== 100) {
+            alert("Amount cannot be divided! Percentages must add up to 100 (currently " +
+                  (solar + food + waste + tree) + ").");
+            $("#budgetResult").hide();
+            return;
+        }
+
+        $("#solarBox").html("Solar/Energy<br>Rs." + (amount * solar / 100));
+        $("#foodBox").html("Organic Food<br>Rs." + (amount * food / 100));
+        $("#wasteBox").html("Recycling<br>Rs." + (amount * waste / 100));
+        $("#treeBox").html("Tree Planting<br>Rs." + (amount * tree / 100));
+
+        $("#budgetResult").fadeIn(500);
+    });
+
+
+    /* ================= 2. ECO STORE ================= */
+    var priceBottle = 300, priceBag = 150, priceBin = 450, priceLamp = 350;
+
+    $("#placeOrder").click(function () {
+
+        var bottle = parseInt($("#bottle").val()) || 0;
+        var bag    = parseInt($("#bag").val())    || 0;
+        var bin    = parseInt($("#bin").val())    || 0;
+        var lamp   = parseInt($("#lamp").val())   || 0;
+
+        if (bottle < 0 || bag < 0 || bin < 0 || lamp < 0) {
+            alert("Quantity cannot be negative.");
+            return;
+        }
+
+        var total = (bottle * priceBottle) + (bag * priceBag) +
+                    (bin * priceBin) + (lamp * priceLamp);
+
+        $("#totalPrice").hide().text("Rs." + total).fadeIn(400);
+    });
+
+
+    /* ================= 3. ELECTRIC CAR WORKSHOP ================= */
+    var glassColors = ["#3cb054", "#1e90ff", "#444444", "#ff8c00", "#8a2be2"];
+    var bodyColors  = ["#7fe02a", "#e63946", "#ffd60a", "#1d70a2", "#ff69b4"];
+    var glassIndex = 0, bodyIndex = 0;
+
+    var defaultTyre = 50;
+    var tyreSize = defaultTyre;
+
+    function drawTyres() {
+        var offset = (defaultTyre - tyreSize) / 2;
+        $(".tyre").css({
+            width: tyreSize + "px",
+            height: tyreSize + "px",
+            top: (95 + offset) + "px",
+            marginLeft: offset + "px"
+        });
+    }
+    drawTyres();
+
+    $("#glassBtn").click(function () {
+        glassIndex = (glassIndex + 1) % glassColors.length;
+        $("#glass").css("border-bottom-color", glassColors[glassIndex]);
+    });
+
+    $("#bodyBtn").click(function () {
+        bodyIndex = (bodyIndex + 1) % bodyColors.length;
+        $("#carBody").css("background-color", bodyColors[bodyIndex]);
+    });
+
+    $("#tyreInc").click(function () {
+        if (tyreSize < 80) { tyreSize += 10; drawTyres(); }
+    });
+
+    $("#tyreDec").click(function () {
+        if (tyreSize > 30) { tyreSize -= 10; drawTyres(); }
+    });
+
+    $("#resetBtn").click(function () {
+        glassIndex = 0;
+        bodyIndex = 0;
+        tyreSize = defaultTyre;
+        $("#glass").css("border-bottom-color", glassColors[0]);
+        $("#carBody").css("background-color", bodyColors[0]);
+        drawTyres();
+    });
+});
+</script>
+
+</body>
+</html>
